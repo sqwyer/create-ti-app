@@ -1,9 +1,10 @@
 #![allow(unused_results,unused_must_use)]
 
+mod includes;
 use clap::Parser;
+use std::fs::{create_dir, File};
+use std::io::Write;
 use std::path::Path;
-use std::fs::{read_dir, copy, create_dir_all};
-use std::io::Result;
 use colorful::Color;
 use colorful::Colorful;
 use dialoguer::Input;
@@ -14,23 +15,18 @@ struct Cli {
     name: std::path::PathBuf
 }
 
-fn copy_recursively(source: impl AsRef<Path>, destination: impl AsRef<Path>) -> Result<()> {
-    create_dir_all(&destination)?;
-    for entry in read_dir(source)? {
-        let entry = entry?;
-        let filetype = entry.file_type()?;
-        if filetype.is_dir() {
-            copy_recursively(entry.path(), destination.as_ref().join(entry.file_name()))?;
-        } else {
-            copy(entry.path(), destination.as_ref().join(entry.file_name()))?;
-        }
-    }
-    Ok(())
+fn create_file(static_contents: &'static str, name: &str, filename: &str) {
+    let mut p = name.to_string();
+    p.push('/');
+    p.push_str(filename);
+    let mut c = File::create(p).expect(&format!("❌ Failed to create {}", &filename)); // ok to panic because this is for built-ins.
+    let _ = c.write(static_contents.as_bytes());
 }
 
 fn main() {
-    println!("{}", "      _____                _           _______ _____                         \n     / ____|              | |         |__   __|_   _|      /\\                \n    | |     _ __ ___  __ _| |_ ___ ______| |    | |______ /  \\   _ __  _ __  \n    | |    | '__/ _ \\/ _` | __/ _ \\______| |    | |______/ /\\ \\ | '_ \\| '_ \\ \n    | |____| | |  __/ (_| | ||  __/      | |   _| |_    / ____ \\| |_) | |_) |\n     \\_____|_|  \\___|\\__,_|\\__\\___|      |_|  |_____|  /_/    \\_\\ .__/| .__/ \n                                                                | |   | |    \n                                                                |_|   |_|    \n".gradient(Color::Cyan));
     let args = Cli::parse();
+
+    println!("{}", "      _____                _           _______ _____                         \n     / ____|              | |         |__   __|_   _|      /\\                \n    | |     _ __ ___  __ _| |_ ___ ______| |    | |______ /  \\   _ __  _ __  \n    | |    | '__/ _ \\/ _` | __/ _ \\______| |    | |______/ /\\ \\ | '_ \\| '_ \\ \n    | |____| | |  __/ (_| | ||  __/      | |   _| |_    / ____ \\| |_) | |_) |\n     \\_____|_|  \\___|\\__,_|\\__\\___|      |_|  |_____|  /_/    \\_\\ .__/| .__/ \n                                                                | |   | |    \n                                                                |_|   |_|    \n".gradient(Color::Cyan));
     let git_installed = Command::new("cmd")
             .args(["git --ver"])
             .output();
@@ -51,6 +47,14 @@ fn main() {
         }
     }
 
-    copy_recursively(&Path::new("template"), &args.name);
+    create_dir(&args.name);
+
+    create_file(&includes::TICONFIG, &args.name.to_str().unwrap(), "ticonfig.json");
+    create_dir(&Path::new(&format!("{}/src", &args.name.display())));
+    create_file(&includes::KEYPRESS, &args.name.to_str().unwrap(), "src/KEYPRESS.8xp");
+    create_file(&includes::MAIN, &args.name.to_str().unwrap(), "src/MAIN.8xp");
+    create_file(&includes::UPDATE, &args.name.to_str().unwrap(), "src/UPDATE.8xp");
+    create_file(&includes::_APP, &args.name.to_str().unwrap(), "src/_APP.8xp");
+
     println!("{}", "\nNew TI App Created!".bold());
 }
