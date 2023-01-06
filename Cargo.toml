@@ -7,3 +7,5 @@ edition = "2021"
 
 [dependencies]
 clap = { version = "3", features = ["derive"]}
+colorful = "0.2.2"
+dialoguer = "0.10.2"
