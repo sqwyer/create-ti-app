@@ -1,6 +1,7 @@
 #![allow(unused_results,unused_must_use)]
 
-use std::{process::Command, fs::{create_dir, File}, path::Path, io::Write};
+use std::{process::Command, fs::{create_dir, File}, path::{Path, PathBuf}, io::Write};
+
 mod includes;
 
 fn create_file(static_contents: &'static str, name: &str, filename: &str) {
@@ -21,6 +22,15 @@ pub fn git_is_installed() -> bool {
         return true;
     }
 }
+
+// this does not work!
+//
+// pub fn init_git_repo(path: &PathBuf) {
+//     Command::new("cmd")
+//         .args([format!("cd {}",&path.display()), "git init".to_string()])
+//         .output()
+//         .expect("❌ Git repository failed");
+// }
 
 pub fn generate_files(path: &Path) {
     create_dir(&path);
