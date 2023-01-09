@@ -1,5 +1,5 @@
 [package]
-name = "create-ti-app"
+name = "ti"
 version = "0.1.0"
 edition = "2021"
 
@@ -9,4 +9,5 @@ edition = "2021"
 clap = { version = "3", features = ["derive"]}
 colorful = "0.2.2"
 dialoguer = "0.10.2"
-git2 = "0.15.0"
+serde_json = "1.0.91"
+serde = { version = "1.0.152", features = ["derive"]}

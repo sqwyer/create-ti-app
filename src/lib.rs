@@ -1,10 +1,11 @@
 #![allow(unused_results,unused_must_use)]
 
-use std::{process::Command, fs::{create_dir, File}, path::{Path, PathBuf}, io::Write};
+use std::{process::Command, fs::{create_dir, File, read}, path::{Path}, io::Write};
 
 mod includes;
+mod build;
 
-fn create_file(static_contents: &'static str, name: &str, filename: &str) {
+pub fn create_file(static_contents: &'static str, name: &str, filename: &str) {
     let mut p = name.to_string();
     p.push('/');
     p.push_str(filename);
@@ -40,4 +41,8 @@ pub fn generate_files(path: &Path) {
     create_file(&includes::MAIN, &path.to_str().unwrap(), "src/MAIN.8xp");
     create_file(&includes::UPDATE, &path.to_str().unwrap(), "src/UPDATE.8xp");
     create_file(&includes::_APP, &path.to_str().unwrap(), "src/_APP.8xp");
+}
+
+pub fn build() {
+    build::build();
 }
