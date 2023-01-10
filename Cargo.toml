@@ -11,3 +11,4 @@ colorful = "0.2.2"
 dialoguer = "0.10.2"
 serde_json = "1.0.91"
 serde = { version = "1.0.152", features = ["derive"]}
+regex = "1.7.1"
