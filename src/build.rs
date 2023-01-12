@@ -19,10 +19,12 @@ trait Program {
 
 impl Program for str {
     fn recursive_prgm(&self) {
-        let re = Regex::new(r"/prgm @[a-zA-Z]+\\/[a-zA-Z]+/g").unwrap();
-        let string = self;
-        for prgms in re.captures_iter(&string) {
-            println!("{:?}", prgms);
+        let re = Regex::new(r"prgm(?P<name>[a-zA-z]+)").unwrap();
+        let string = &self;
+        // println!("{}", &string);
+        // println!("{:?}", re.captures(&string));
+        for caps in re.captures_iter(&string) {
+            println!("{:?}", &caps.name("name"));
         }
     }
 }
@@ -36,9 +38,11 @@ pub fn get_config() -> Config {
 
 pub fn build() {
     let config: Config = get_config();
-    println!("{}", &config.src);
-    println!("{:?}", Path::new(".").join(&config.src).join(&config.main));
-    let content = read_to_string(Path::new(&config.src).join(&config.main)).expect(&format!("{} {}", "✗".red(), "Could not read main file or does not exist.".bold()));
+    let mut mainfile = std::env::current_dir().unwrap().to_str().unwrap().to_owned();
+    mainfile.push_str(&config.src);
+    mainfile.push_str(&config.main);
+
+    let content = read_to_string(Path::new(&mainfile)).expect("Error reading main file.");
 
     content.recursive_prgm();
 }
